@@ -1,0 +1,202 @@
+basePath: '[ Base URL: 127.0.0.1:8082/api/v1 ]'
+definitions:
+  controller._ResponsePostList:
+    properties:
+      code:
+        description: 业务响应状态码
+        type: integer
+      data:
+        description: 数据
+        items:
+          $ref: '#/definitions/models.ApiPostDetail'
+        type: array
+      message:
+        description: 提示信息
+        type: string
+    type: object
+  models.ApiPostDetail:
+    properties:
+      community_detail:
+        allOf:
+        - $ref: '#/definitions/models.CommunityDetail'
+        description: 嵌入社区结构体
+      post_details:
+        allOf:
+        - $ref: '#/definitions/models.Post'
+        description: 嵌入帖子结构体
+      user_name:
+        type: string
+      vote_neg_num:
+        example: "0"
+        type: string
+      vote_pos_num:
+        example: "0"
+        type: string
+    type: object
+  models.CommunityDetail:
+    properties:
+      create_time:
+        type: string
+      id:
+        type: integer
+      introduction:
+        type: string
+      name:
+        type: string
+    type: object
+  models.Post:
+    properties:
+      author_id:
+        type: integer
+      community_id:
+        type: integer
+      content:
+        type: string
+      create_time:
+        type: string
+      id:
+        example: "0"
+        type: string
+      status:
+        type: integer
+      title:
+        type: string
+    required:
+    - content
+    - title
+    type: object
+host: "8082"
+info:
+  contact:
+    email: support@swagger.io
+    name: gaoleslei@gmail.com
+    url: http://www.swagger.io/support
+  description: 一个简单的帖子社区
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: bluebell项目文档接口
+  version: "1.0"
+paths:
+  /post:
+    post:
+      consumes:
+      - application/json
+      description: 用户必须登录才能创建帖子
+      parameters:
+      - description: Bearer Token令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 创建帖子参数
+        in: body
+        name: p
+        required: true
+        schema:
+          $ref: '#/definitions/models.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller._ResponsePostList'
+      security:
+      - ApiKeyAuth: []
+      summary: 用户创建帖子接口
+      tags:
+      - 帖子相关接口
+  /post/:id:
+    get:
+      consumes:
+      - application/json
+      description: 用户必须登录才能获取帖子详情
+      parameters:
+      - description: Bearer Token令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子id
+        in: query
+        name: object
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller._ResponsePostList'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据post_id获取帖子详情的接口
+      tags:
+      - 帖子相关接口
+  /posts:
+    get:
+      consumes:
+      - application/json
+      description: 用户必须登录后根据page和size请求参数分页获取帖子详情列表
+      parameters:
+      - description: Bearer Token令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 帖子起始页page和页数大小size,有默认值
+        in: query
+        name: object
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller._ResponsePostList'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据page，size获取帖子详情的接口
+      tags:
+      - 帖子相关接口
+  /posts2:
+    get:
+      consumes:
+      - application/json
+      description: 用户必须登录后根据需求获取帖子详情列表
+      parameters:
+      - description: Bearer Token令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 可以为空
+        in: query
+        name: community_id
+        type: integer
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller._ResponsePostList'
+      security:
+      - ApiKeyAuth: []
+      summary: 根据时间、帖子投票数或社区分类获取帖子详情的接口
+      tags:
+      - 帖子相关接口
+swagger: "2.0"
